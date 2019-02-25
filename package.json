@@ -1,0 +1,15 @@
+{
+  "name": "pyseeyou-plural-ruleset-generator",
+  "version": "0.0.1",
+  "description": "Generates locale file to use by pyseeyou library for cardinal plurals",
+  "dependencies": {
+    "coffeescript": "^2.3.2",
+    "node-fetch": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "generator": "coffee ./extractor.coffee"
+  },
+  "author": "Sasha-Sorokin",
+  "license": "MIT"
+}
