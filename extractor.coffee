@@ -66,14 +66,14 @@ generateFor = (locale, suplementalPlurals, tab = '\t') =>
             for relation, i in relations
                 [, min, max] = /(\d+)(?:..(\d+)$|$)/.exec relation
 
-                if i > 0 then relation += " or "
+                if i > 0 then replacement += " or "
 
                 if max
                     if method is '!=' then replacement += 'not '
 
-                    replacement = "#{value} >= #{min} and #{value} <= #{max}"
+                    replacement += "#{value} >= #{min} and #{value} <= #{max}"
                 else
-                    replacement = "#{value} #{method} #{relation}"
+                    replacement += "#{value} #{method} #{relation}"
 
             return replacement
         
