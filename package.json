@@ -4,6 +4,7 @@
   "description": "Generates locale file to use by pyseeyou library for cardinal plurals",
   "dependencies": {
     "coffeescript": "^2.3.2",
+    "decimal.js-light": "^2.5.0",
     "node-fetch": "^2.3.0"
   },
   "devDependencies": {},
