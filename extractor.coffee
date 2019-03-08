@@ -76,6 +76,9 @@ IMPORT_NAMESPACE = readConfiguration 'importNamespace', 'IMPORT_NAMESPACE', 'pys
 # Does not work in browser, set `importNamespace` to `''` instead
 SKIP_NAMESPACE = toBoolean (readConfiguration undefined, 'SKIP_NAMESPACE', false)
 
+# Name of the test function at the top of test file to use by tests
+TEST_FN_NAME = readConfiguration 'testFnName', 'TEST_FN_NAME', 'check'
+
 # ======================================
 #         PLURAL RULES GENERATOR
 #     only cardinal rules currently.
@@ -258,6 +261,32 @@ MATCH_SEGMENT_REG = /^(.+),$/
 # Gets test function name
 getTestName = (locale, type) -> "test_#{type}_#{locale}"
 
+# Emits test function that is used to perform assertions
+emitTestFunction = (code) ->
+    checkCode = "def #{TEST_FN_NAME}(assertions, plural_fn):\n"
+    checkCode += "#{tab}for assertion in assertions:\n"
+    checkCode += "#{tab}#{tab}match, samples = assertion\n"
+    checkCode += "#{tab}#{tab}for sample in samples:\n"
+
+    fcCall = 'plural_fn(*get_parts_of_num(sample))'
+
+    if GENERATE_DEBUG_CODE
+        checkCode += "#{tab}#{tab}#{tab}result = #{fcCall}\n"
+        checkCode += "#{tab}#{tab}#{tab}print(sample, 'expected to be', match, ', is', result)\n"
+        checkCode += "#{tab}#{tab}#{tab}assert result == match\n"
+    else
+        checkCode += "#{tab}#{tab}#{tab}assert #{fcCall} == match\n"
+
+    checkCode += '\n'
+
+    if code.includes checkCode
+        console.trace('You are trying to re-emit the check code here:')
+        return code # no need to emit code again
+
+    code += checkCode
+
+    return code
+
 # Generates test for specified rules
 generateTestFor = (fcName, rules, locale, type) ->
     # fcName => 'cardinal_af'
@@ -330,20 +359,7 @@ generateTestFor = (fcName, rules, locale, type) ->
 
     testBody += "#{tab}]\n\n"
 
-    testBody += "#{tab}for assertion in assertions:\n"
-    testBody += "#{tab}#{tab}match, samples = assertion\n"
-    testBody += "#{tab}#{tab}for sample in samples:\n"
-
-    fcCall = "#{fcName}(*get_parts_of_num(sample))"
-
-    if GENERATE_DEBUG_CODE
-        testBody += "#{tab}#{tab}#{tab}ret = #{fcCall}\n"
-        testBody += "#{tab}#{tab}#{tab}print(sample, 'expected to be', match, 'but is', ret)\n"
-        testBody += "#{tab}#{tab}#{tab}assert ret == match\n"
-    else
-        testBody += "#{tab}#{tab}#{tab}assert #{fcCall} == match\n"
-
-    return "#{testBody}\n"
+    testBody += "#{tab}#{TEST_FN_NAME}(assertions, #{fnName})\n\n"
 
 # Split decimal into two parts
 # decimalSplit = (n) -> n.toString().split '.'
