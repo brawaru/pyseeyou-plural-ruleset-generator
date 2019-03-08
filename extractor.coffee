@@ -259,7 +259,7 @@ TYPE_SEGMENT_REG = /^@(integer|decimal)$/
 MATCH_SEGMENT_REG = /^(.+),$/
 
 # Gets test function name
-getTestName = (locale, type) -> "test_#{type}_#{locale}"
+getTestName = (locale, type) -> "test_#{type}_#{locale.replace '-', '_'}"
 
 # Emits test function that is used to perform assertions
 emitTestFunction = (code) ->
@@ -288,12 +288,9 @@ emitTestFunction = (code) ->
     return code
 
 # Generates test for specified rules
-generateTestFor = (fcName, rules, locale, type) ->
-    # fcName => 'cardinal_af'
+generateTestFor = (rules, locale, type) ->
     # locale => 'af'
     # type => 'cardinal'
-
-    locale = locale.replace '-', '_'
 
     testBody = "def #{getTestName locale, type}():\n"
 
@@ -359,7 +356,7 @@ generateTestFor = (fcName, rules, locale, type) ->
 
     testBody += "#{tab}]\n\n"
 
-    testBody += "#{tab}#{TEST_FN_NAME}(assertions, #{fnName})\n\n"
+    testBody += "#{tab}#{TEST_FN_NAME}(assertions, CARDINALS['#{locale}'])\n\n"
 
 # Split decimal into two parts
 # decimalSplit = (n) -> n.toString().split '.'
@@ -468,13 +465,16 @@ emitFooter = (code) ->
     code = 'import math\n\n'
     testsCode = ''
 
+    # => Emit check code to tests
+
+    testsCode = emitTestFunction(testsCode)
+
     # => Emit warnings?
 
     if EMIT_WARNING_HEADERS then code = emitHeaderWarning '', code
 
     # => Generate code!
 
-    testLocaleFuncsUsed = [] # Will be used to generate import in tests
     cardinalsDict = [] # Will be used to generate dictionary
 
     for locale of locales
@@ -489,10 +489,7 @@ emitFooter = (code) ->
         cardinalsDict.push([ locale, fnName ])
 
         console.log ' test'
-        testsCode += generateTestFor fnName, testsRules, locale, 'cardinal'
-
-        if not testLocaleFuncsUsed.includes fnName
-            testLocaleFuncsUsed.push fnName
+        testsCode += generateTestFor testsRules, locale, 'cardinal'
 
     # => Cardinals dict insertion
 
@@ -516,11 +513,10 @@ emitFooter = (code) ->
 
     testImports = 'import pytest\n\n'
 
-    testImports += "from #{namespace}locales import get_parts_of_num\n\n"
+    testImports += "from #{namespace}locales import get_parts_of_num\n"
+    testImports += "from #{namespace}#{CLDR_RULES_FILENAME} import CARDINALS\n\n"
 
     if EMIT_WARNING_HEADERS then testImports = emitHeaderWarning '', testImports
-
-    testImports += "from #{namespace}#{CLDR_RULES_FILENAME} import (\n#{tab}#{testLocaleFuncsUsed.join ', '})\n"
 
     testsCode = "#{testImports}\n#{testsCode}"
 
