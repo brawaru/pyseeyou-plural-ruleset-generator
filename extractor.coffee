@@ -310,18 +310,18 @@ generateTestFor = (fcName, rules, locale, type) ->
 
             [ start, end ] = match.split '~'
 
-            samples.push start # matches to generate
+            samples.push "'#{start}'" # matches to generate
 
             if end?
                 numBetween = getNumberBetween start, end, type is 'decimal'
 
-                if +numBetween < start or +numBetween > end
+                _numBetween = +numBetween
+
+                if _numBetween < start or _numBetween > end
                     throw new Error "Cannot get number in between (start: #{start}, end: #{end}, got: #{numBetween})"
 
-                samples.push numBetween
-                samples.push end
-
-        samples = samples.map (_) => "'#{_}'"
+                samples.push "'#{numBetween}'"
+                samples.push "'#{end}'"
 
         if GENERATE_DEBUG_CODE then testBody += "#{tab}#{tab}# #{rulesStr}\n"
         testBody += "#{tab}#{tab}('#{expectedMatch}', [#{samples.join()}])"
