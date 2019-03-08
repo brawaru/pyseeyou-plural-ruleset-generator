@@ -493,7 +493,7 @@ emitFooter = (code) ->
 
     # => Cardinals dict insertion
 
-    code += '\n\nCARDINALS = {\n'
+    code += 'CARDINALS = {\n'
 
     cardinalsCount = cardinalsDict.length
 
