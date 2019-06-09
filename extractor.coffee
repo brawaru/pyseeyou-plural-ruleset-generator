@@ -133,7 +133,7 @@ generateFor = (locale, suplementalPlurals) ->
         else
             ifCode = 'elif {0}:'
 
-        rule = rule.replace /([a-z]) \% (\d+)/g, (match, $1, $2) =>
+        rule = rule.replace /([a-z]) ?\% ?(\d+)/g, (match, $1, $2) =>
             pollutionKey = "#{$1}#{$2}"
 
             if not pollutions[pollutionKey]
@@ -155,7 +155,7 @@ generateFor = (locale, suplementalPlurals) ->
             console.log "  -> part: #{part}"
 
             # I don't know what this regular expression doing, but it works:
-            parts[i] = part.replace /([a-z10]+) (=|!=) ((?:[0-9.]+,[0-9.,]+)|(?:[0-9]+)\.\.([0-9]+)|(?:\d*\.?\d*))/g, (_, value, method, relations, _relations) =>
+            parts[i] = part.replace /([a-z10]+) ?(=|!=) ?((?:[0-9.]+,[0-9.,]+)|(?:[0-9]+)\.\.([0-9]+)|(?:\d*\.?\d*))/g, (_, value, method, relations, _relations) =>
                 relations = relations.split ','
                     .map (_) => _.trim()
                 relationsLen = relations.length
