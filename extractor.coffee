@@ -52,7 +52,7 @@ toBoolean = (val) ->
 tab = readConfiguration 'tabs', 'TABS', '    '
 
 # Gets URL used to download CLDR suplemental data
-CLDR_URL = readConfiguration 'cldrUrl', 'CLDR_URL', 'https://raw.githubusercontent.com/unicode-cldr/cldr-core/master/supplemental/plurals.json'
+CLDR_URL = readConfiguration 'cldrUrl', 'CLDR_URL', 'https://raw.githubusercontent.com/unicode-cldr/cldr-core/35.1.0/supplemental/plurals.json'
 
 # Whether should generator emit "helpful" code to make debugging little easier or not
 GENERATE_DEBUG_CODE = readConfiguration 'emitDebugCode', 'EMIT_DEBUG_CODE', false
